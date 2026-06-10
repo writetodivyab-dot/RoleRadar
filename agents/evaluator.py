@@ -4,7 +4,6 @@ from openai import OpenAI
 from dotenv import load_dotenv
 
 load_dotenv()
-client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 def load_criteria():
     path = os.path.join(os.path.dirname(__file__), '..', 'config', 'scoring_criteria.yaml')
@@ -17,6 +16,7 @@ def load_profile():
         return yaml.safe_load(f)
 
 def evaluate_job(job: dict) -> dict:
+    client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
     criteria = load_criteria()
     profile = load_profile()
 
