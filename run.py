@@ -4,11 +4,18 @@ from agents.evaluator import evaluate_all
 from utils.database import init_db, insert_job, get_unscored_jobs, update_job_score, get_all_jobs
 
 def run_search():
+    from utils.database import is_duplicate
     print("\n=== RoleRadar: Searching for jobs ===\n")
     jobs = discover_and_scrape()
+    saved = 0
+    skipped = 0
     for job in jobs:
+        if is_duplicate(job['title'], job['company']):
+            skipped += 1
+            continue
         insert_job(job)
-    print(f"\nSaved {len(jobs)} jobs to database.")
+        saved += 1
+    print(f"\nSaved {saved} new jobs, skipped {skipped} duplicates.")
 
 def run_score(limit=None):
     print("\n=== RoleRadar: Scoring jobs ===\n")
@@ -16,14 +23,37 @@ def run_score(limit=None):
     if not jobs:
         print("No unscored jobs found.")
         return
+
+    # Pre-filter by title before sending to OpenAI
+    relevant_keywords = [
+        'salesforce', 'apex', 'lwc', 'agentforce', 'flow',
+        'architect', 'crm', 'platform', 'solution', 'technical'
+    ]
+    
+    filtered = []
+    skipped = []
+    for job in jobs:
+        title_lower = job['title'].lower()
+        if any(kw in title_lower for kw in relevant_keywords):
+            filtered.append(job)
+        else:
+            skipped.append(job)
+
+    # Auto-skip irrelevant jobs without calling OpenAI
+    for job in skipped:
+        update_job_score(job['id'], 0, 'Skip')
+
+    print(f"Pre-filter: {len(filtered)} relevant, {len(skipped)} auto-skipped\n")
+
     if limit:
-        jobs = jobs[:limit]
-    print(f"Scoring {len(jobs)} jobs...\n")
-    evaluated = evaluate_all(jobs)
+        filtered = filtered[:limit]
+
+    print(f"Scoring {len(filtered)} jobs with AI...\n")
+    evaluated = evaluate_all(filtered)
     for job in evaluated:
         update_job_score(job['id'], job['score'], job['recommendation'])
     print(f"\nDone. Scored {len(evaluated)} jobs.")
-
+    
 def print_results():
     jobs = get_all_jobs()
     if not jobs:

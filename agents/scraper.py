@@ -12,7 +12,10 @@ def load_profile():
 
 GREENHOUSE_COMPANIES = [
     'neuraflash', 'purestorage', 'neocol', 'litmos',
-    'conga', 'pandadoc', 'gongio'
+    'conga', 'pandadoc', 'gongio', 'axon', 'techholding',
+    'nozominetworks', 'kunai', 'thevirtussolution', 'huntress', 'attainpartners',
+    'natera', 'banyansoftware', 'formativgroup', 'cclfg'
+
 ]
 
 def search_greenhouse(keywords: list[str]) -> list[dict]:
@@ -47,6 +50,15 @@ def search_greenhouse(keywords: list[str]) -> list[dict]:
                     'sf,' in location_lower
                 )
 
+                # Exclude Canada-only onsite roles
+                is_canada_only = (
+                    'canada' in location_lower and
+                    not is_remote
+                )
+
+                if is_canada_only:
+                    continue
+
                 if not is_remote and not is_california:
                     continue
 
@@ -68,10 +80,18 @@ def search_greenhouse(keywords: list[str]) -> list[dict]:
 
     return jobs
 
+
 def search_linkedin(keywords: list[str], location: str) -> list[dict]:
     jobs = []
     seen_urls = set()
 
+    exclude_titles = [
+        'java', 'python', 'ruby', 'android', 'ios', 'data engineer',
+        'data scientist', 'devops', 'backend', 'frontend', 'react',
+        'angular', 'node', 'php', 'golang', '.net developer',
+        'research scientist', 'phd', 'machine learning engineer',
+        'research engineer', 'applied scientist'
+    ]
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=True)
         page = browser.new_page()
@@ -100,7 +120,31 @@ def search_linkedin(keywords: list[str], location: str) -> list[dict]:
                         location_text = location_el.inner_text().strip() if location_el else ''
                         job_url = link_el.get_attribute('href') if link_el else ''
 
-                        if job_url and job_url not in seen_urls and title:
+                        if not title or not job_url:
+                            continue
+
+                        if any(ex.lower() in title.lower() for ex in exclude_titles):
+                            continue
+
+                        location_lower = location_text.lower()
+                        is_remote = 'remote' in location_lower
+                        is_california = (
+                            'san francisco' in location_lower or
+                            'bay area' in location_lower or
+                            'california' in location_lower or
+                            ', ca' in location_lower or
+                            'sf,' in location_lower or
+                            'united states' in location_lower
+                        )
+                        is_canada_only = 'canada' in location_lower and not is_remote
+
+                        if is_canada_only:
+                            continue
+
+                        if not is_remote and not is_california:
+                            continue
+
+                        if job_url not in seen_urls:
                             seen_urls.add(job_url)
                             jobs.append({
                                 'title': title,
@@ -121,7 +165,7 @@ def search_linkedin(keywords: list[str], location: str) -> list[dict]:
         browser.close()
 
     return jobs
-
+    
 def deduplicate(jobs: list[dict]) -> list[dict]:
     seen = set()
     unique = []

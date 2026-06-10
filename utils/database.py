@@ -75,3 +75,14 @@ def update_job_status(job_id: int, status: str):
     cursor.execute('UPDATE jobs SET status = ? WHERE id = ?', (status, job_id))
     conn.commit()
     conn.close()
+
+def is_duplicate(title: str, company: str) -> bool:
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute('''
+        SELECT COUNT(*) FROM jobs 
+        WHERE LOWER(title) = LOWER(?) AND LOWER(company) = LOWER(?)
+    ''', (title, company))
+    count = cursor.fetchone()[0]
+    conn.close()
+    return count > 0
