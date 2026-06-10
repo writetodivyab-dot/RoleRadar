@@ -77,11 +77,11 @@ def print_results():
         print(f"  [{job['score']}] {job['title']} at {job['company']} | {job['location']}")
         print(f"       {job['url']}")
 
-    def run_email():
-        from agents.email_agent import run_email_agent
-        print("\n=== RoleRadar: Building email digest ===\n")
-        run_email_agent()
-
+def run_email():
+    from agents.email_agent import run_email_agent
+    print("\n=== RoleRadar: Building email digest ===\n")
+    run_email_agent()
+    
 if __name__ == "__main__":
     init_db()
 
