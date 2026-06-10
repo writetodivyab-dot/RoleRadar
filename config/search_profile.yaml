@@ -1,0 +1,29 @@
+name: "DB"
+
+target_roles:
+  - "Salesforce Developer"
+  - "Salesforce Architect"
+  - "Salesforce Technical Architect"
+  - "Salesforce Solution Architect"
+
+location:
+  preferred: "San Francisco Bay Area"
+  remote: true
+  hybrid: true
+  onsite: true
+
+salary:
+  minimum: 100000
+
+keywords:
+  - "Salesforce"
+  - "Apex"
+  - "LWC"
+  - "Agentforce"
+  - "Flow"
+
+exclude_keywords:
+  - "junior"
+  - "intern"
+
+visa_sponsorship_required: true

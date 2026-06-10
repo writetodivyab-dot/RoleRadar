@@ -1,0 +1,26 @@
+weights:
+  role_relevance: 30
+  seniority_match: 20
+  visa_sponsorship: 25
+  location_flexibility: 10
+  compensation: 10
+  growth_potential: 5
+
+seniority:
+  years_of_experience: 8
+  level: "senior"
+
+dealbreakers:
+  - "no visa sponsorship"
+  - "must be authorized to work"
+  - "no sponsorship available"
+
+strong_signals:
+  - "visa sponsorship"
+  - "will sponsor"
+  - "h1b"
+  - "agentforce"
+  - "architect"
+  - "platform developer"
+
+minimum_score: 60
