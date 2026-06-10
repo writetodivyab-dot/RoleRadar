@@ -53,7 +53,7 @@ def run_score(limit=None):
     for job in evaluated:
         update_job_score(job['id'], job['score'], job['recommendation'])
     print(f"\nDone. Scored {len(evaluated)} jobs.")
-    
+
 def print_results():
     jobs = get_all_jobs()
     if not jobs:
@@ -77,6 +77,11 @@ def print_results():
         print(f"  [{job['score']}] {job['title']} at {job['company']} | {job['location']}")
         print(f"       {job['url']}")
 
+    def run_email():
+    from agents.email_agent import run_email_agent
+    print("\n=== RoleRadar: Building email digest ===\n")
+    run_email_agent()
+
 if __name__ == "__main__":
     init_db()
 
@@ -92,9 +97,12 @@ if __name__ == "__main__":
         run_score(limit)
     elif '--results' in args:
         print_results()
+    elif '--email' in args:
+    run_email()
     else:
         print("Usage:")
         print("  python run.py --search              # Find new jobs")
         print("  python run.py --score               # Score all unscored jobs")
         print("  python run.py --score --limit 10    # Score first 10 only")
         print("  python run.py --results             # View results")
+        print("  python run.py --email               # Build email digest")

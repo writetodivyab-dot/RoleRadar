@@ -33,12 +33,14 @@ jobs:
         run: echo "OPENAI_API_KEY=$OPENAI_API_KEY" > .env
 
       - name: Run search
-        run: python run.py --search
+         run: |
+          python run.py --search
+          python run.py --email
 
       - name: Commit updated database
         run: |
           git config --global user.name "RoleRadar Bot"
           git config --global user.email "bot@roleradar.com"
-          git add data/jobs.db
-          git diff --staged --quiet || git commit -m "Update jobs database"
+          git add data/jobs.db data/email_digest.json
+          git diff --staged --quiet || git commit -m "Update jobs database and digest"
           git push
