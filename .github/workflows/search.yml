@@ -2,12 +2,12 @@ name: RoleRadar Job Search
 
 on:
   schedule:
-    - cron: '0 */3 * * *'  # Every 3 hours
-  workflow_dispatch:         # Allow manual trigger
+    - cron: '0 8,12,17 * * *'
+  workflow_dispatch:
 
-  permissions:
+permissions:
   contents: write
-  
+
 jobs:
   search:
     runs-on: ubuntu-latest
