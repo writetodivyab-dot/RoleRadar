@@ -98,7 +98,7 @@ if __name__ == "__main__":
     elif '--results' in args:
         print_results()
     elif '--email' in args:
-    run_email()
+        run_email()
     else:
         print("Usage:")
         print("  python run.py --search              # Find new jobs")
